@@ -1,0 +1,61 @@
+vuyo
+0011
+58690.0
+22/03/2021
+Software Developer
+Current
+12/12/1212
+1234432112
+Female
+South African
+random_sample
+*
+zungu
+0022
+1200.0
+12/03/2020
+Software Developer
+Current
+12/12/1212
+1234432112
+Male
+American
+random_sample
+*
+okuhle
+0033
+12374
+23/03/2021
+Software Developer
+Savings
+23/01/2019
+1234567890
+Male
+German
+Passport
+*
+saurav
+0044
+12374
+23/03/2021
+Software Developer
+Savings
+23/1/2000
+1234567890
+Male
+German
+Passport
+*
+khanya
+0055
+12374
+23/03/2021
+Software Developer
+Savings
+23/1/2000
+1234567890
+Male
+German
+Passport
+*
+
