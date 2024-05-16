@@ -8,7 +8,6 @@ Current
 1234432112
 Female
 South African
-random_sample
 *
 zungu
 0022
@@ -19,8 +18,7 @@ Current
 12/12/1212
 1234432112
 Male
-American
-random_sample
+South African
 *
 okuhle
 0033
@@ -31,8 +29,7 @@ Savings
 23/01/2019
 1234567890
 Male
-German
-Passport
+South African
 *
 saurav
 0044
@@ -43,8 +40,7 @@ Savings
 23/1/2000
 1234567890
 Male
-German
-Passport
+South African
 *
 khanya
 0055
@@ -55,7 +51,17 @@ Savings
 23/1/2000
 1234567890
 Male
-German
-Passport
+South African
 *
 
+1234567890
+0000
+50000
+16/05/2024
+Lutho Melapi
+Savings
+15/03/2024
+0123456789
+Male
+South African
+*

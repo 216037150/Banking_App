@@ -208,47 +208,37 @@ def transaction(identity, amount, choice):  # choice 1 for deposit; choice 2 for
     return balance
 
 
-def check_credentials(identity, password, choice,
-                      admin_access):  # checks credentials of admin/customer and returns True or False
-    folder_name = "./database/Admin" if (choice == 1) else "./database/Customer"
-    file_name = "/adminDatabase.txt" if (choice == 1) else "/customerDatabase.txt"
+def check_credentials(identity, password, choice, admin_access):
+    folder_name = "./database/Admin" if choice == 1 else "./database/Customer"
+    file_name = "/adminDatabase.txt" if choice == 1 else "/customerDatabase.txt"
 
     try:
         os.makedirs(folder_name, exist_ok=True)
-        database = open(folder_name + file_name, "r")
+        with open(folder_name + file_name, "r") as database:
+            is_credentials_correct = False
+            lines = iter(database.readlines())
+            for line in lines:
+                id_fetched = line.strip()
+                password_fetched = next(lines).strip()
+                if id_fetched == identity:
+                    if ((password == "DO_NOT_CHECK_ADMIN" and choice == 1 and not admin_access) or 
+                        (password == "DO_NOT_CHECK" and choice == 2 and admin_access) or 
+                        password_fetched == password):
+                        return True
+                # Skip unnecessary lines
+                if choice == 1:
+                    next(lines)  # Skip line
+                else:
+                    for _ in range(10):
+                        next(lines)  # Skip lines
     except FileNotFoundError:
-        print("#", folder_name[2:], "database doesn't exists!\n# New", folder_name[2:],
-              "database created automatically.")
-        database = open(folder_name + file_name, "a")
-        if choice == 1:
-            database.write("admin\nadmin@123\n*\n")
-    else:
-        is_credentials_correct = False
-        for line in database:
-            id_fetched = line.replace("\n", "")
-            password_fetched = database.__next__().replace("\n", "")
-            if id_fetched == identity:
-                if ((password == "DO_NOT_CHECK_ADMIN" and choice == 1 and admin_access == False) or (
-                        password == "DO_NOT_CHECK" and choice == 2 and admin_access == True) or password_fetched == password):
-                    is_credentials_correct = True
-                    database.close()
-                    return True
-            if choice == 1:  # skips unnecessary lines in admin database.
-                database.__next__()  # skipping line
-            else:  # skips unnecessary lines in customer database.
-                for index in range(10):
-                    fetched_line = database.readline()
-                    if fetched_line is not None:
-                        continue
-                    else:
-                        break
-        if is_credentials_correct:
-            print("Success!")
-        else:
-            print("Failure!")
+        print(f"{folder_name[2:]} database doesn't exist!\nNew {folder_name[2:]} database created automatically.")
+        with open(folder_name + file_name, "a") as database:
+            if choice == 1:
+                database.write("admin\nadmin@123\n*\n")
 
-    database.close()
     return False
+
 
 
 # Backend python functions code ends.
@@ -405,7 +395,7 @@ class adminLogin:
         self.Button_back.place(relx=0.545, rely=0.755)
 
         global admin_img
-        admin_img = tk.PhotoImage(file="./images/adminLogin1.png")
+        admin_img = tk.PhotoImage(file="./images/ad.png")
 
     def back(self):
         self.master.withdraw()
@@ -813,34 +803,27 @@ class createCustomerAccount:
         self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  borderwidth="0", disabledforeground="#a3a3a3", foreground="#ffffff",
                                  highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Proceed''',
-                                 command=lambda: self.create_acc(self.Entry1.get(), self.Entry2.get(), acc_type.get(),
-                                                                 self.Entry4.get(), self.Entry5.get(), gender.get(),
-                                                                 self.Entry7.get(), self.Entry8.get(),
-                                                                 self.Entry9.get(), self.Entry10.get(),
+                                 command=lambda: self.create_acc(self.Entry1.get(), self.Entry2.get(), acc_type.get(),                                                          self.Entry4.get(), self.Entry5.get(), gender.get(),
+                                                                 self.Entry7.get(), self.Entry10.get(),
+                                                                 self.Entry9.get(), 
                                                                  self.Entry11.get()))
         self.Button2.place(relx=0.633, rely=0.893, height=24, width=67)
 
-        self.Label8.place(relx=0.18, rely=0.546, height=24, width=122)
-
-        self.Entry8 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black")
-        self.Entry8.place(relx=0.511, rely=0.546, height=20, relwidth=0.302)
+   
 
     def back(self):
         self.master.withdraw()
 
     def create_acc(self, customer_account_number, name, account_type, date_of_birth, mobile_number, gender, nationality,
-                   KYC_document,
                    PIN, confirm_PIN, initial_balance):
 
-        if is_valid(customer_account_number) and customer_account_number.isnumeric():
+        if customer_account_number.isnumeric():
             if name != "":
                 if account_type == "Savings" or account_type == "Current":
                     if check_date(date_of_birth):
                         if is_valid_mobile(mobile_number):
                             if gender == "Male" or gender == "Female":
                                 if nationality.__len__() != 0:
-                                    if KYC_document.__len__() != 0:
                                         if PIN.isnumeric() and PIN.__len__() == 4:
                                             if confirm_PIN == PIN:
                                                 if initial_balance.isnumeric():
@@ -885,14 +868,14 @@ class createCustomerAccount:
                 return
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="The account number is invalid!")
+            Error.setMessage(self, message_shown="Invalid Acoount Number!")
             return
 
         today = date.today()  # set date of account creation
         date_of_account_creation = today.strftime("%d/%m/%Y")
 
         # adding in database
-        data = customer_account_number + "\n" + PIN + "\n" + initial_balance + "\n" + date_of_account_creation + "\n" + name + "\n" + account_type + "\n" + date_of_birth + "\n" + mobile_number + "\n" + gender + "\n" + nationality + "\n" + KYC_document + "\n" + "*\n"
+        data = customer_account_number + "\n" + PIN + "\n" + initial_balance + "\n" + date_of_account_creation + "\n" + name + "\n" + account_type + "\n" + date_of_birth + "\n" + mobile_number + "\n" + gender + "\n" + nationality + "\n" + "*\n"
         append_data("./database/Customer/customerDatabase.txt", data)
 
         self.master.withdraw()
