@@ -1,3 +1,14 @@
+okuhle
+0033
+40000.0
+23/03/2021
+Software Developer
+Savings
+23/01/2019
+1234567890
+Female
+South African
+*
 vuyo
 0011
 58690.0
@@ -17,17 +28,6 @@ Software Developer
 Current
 12/12/1212
 1234432112
-Male
-South African
-*
-okuhle
-0033
-12374
-23/03/2021
-Software Developer
-Savings
-23/01/2019
-1234567890
 Male
 South African
 *
@@ -53,7 +53,6 @@ Savings
 Male
 South African
 *
-
 1234567890
 0000
 50000
@@ -63,5 +62,16 @@ Savings
 15/03/2024
 0123456789
 Male
+South African
+*
+111122223333
+5555
+4500
+16/05/2024
+Sethu
+Current
+07/09/2023
+0999884848
+Female
 South African
 *

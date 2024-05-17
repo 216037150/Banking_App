@@ -836,39 +836,39 @@ class createCustomerAccount:
                                                     return
                                             else:
                                                 Error(Toplevel(self.master))
-                                                Error.setMessage(self, message_shown="The PIN does not macth!")
+                                                Error.setMessage(self, message_shown="PIN mismatch!")
                                                 return
                                         else:
                                             Error(Toplevel(self.master))
-                                            Error.setMessage(self, message_shown="The PIN is invalid!")
+                                            Error.setMessage(self, message_shown="Invalid PIN!")
                                             return
                                 else:
                                     Error(Toplevel(self.master))
-                                    Error.setMessage(self, message_shown="Please enter your nationality!")
+                                    Error.setMessage(self, message_shown="Enter nationality!")
                                     return
                             else:
                                 Error(Toplevel(self.master))
-                                Error.setMessage(self, message_shown="Please select your gender!")
+                                Error.setMessage(self, message_shown="Select gender!")
                                 return
                         else:
                             Error(Toplevel(self.master))
-                            Error.setMessage(self, message_shown="The mobile number is invalid!")
+                            Error.setMessage(self, message_shown="Invalid number!")
                             return
                     else:
                         Error(Toplevel(self.master))
-                        Error.setMessage(self, message_shown="The date is invalid!")
+                        Error.setMessage(self, message_shown="Invalid date!")
                         return
                 else:
                     Error(Toplevel(self.master))
-                    Error.setMessage(self, message_shown="Please select account type!")
+                    Error.setMessage(self, message_shown="Select account type!")
                     return
             else:
                 Error(Toplevel(self.master))
-                Error.setMessage(self, message_shown="The name can't be empty!")
+                Error.setMessage(self, message_shown="Name is empty!")
                 return
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Invalid Acoount Number!")
+            Error.setMessage(self, message_shown="Invalid Account Number!")
             return
 
         today = date.today()  # set date of account creation
@@ -1144,7 +1144,7 @@ class depositMoney:
             else:
                 Error(Toplevel(self.master))
                 if float(amount) > 25000:
-                    Error.setMessage(self, message_shown="Insufficient funds!")
+                    Error.setMessage(self, message_shown="Limit Exceeded!")
                 else:
                     Error.setMessage(self, message_shown="Positive value expected!")
                 return
@@ -1157,7 +1157,7 @@ class depositMoney:
             Error.setMessage(self, message_shown="Transaction failed!")
             return
         else:
-            output = "Amount of rupees " + str(amount) + " deposited successfully.\nUpdated balance : " + str(output)
+            output = "Amount of rands " + str(amount) + " deposited successfully.\nUpdated balance : " + str(output)
             customerMenu.printMessage_outside(output)
             self.master.withdraw()
 
@@ -1208,7 +1208,7 @@ class withdrawMoney:
             else:
                 Error(Toplevel(self.master))
                 if float(amount) > 25000:
-                    Error.setMessage(self, message_shown="Insufficient funds!")
+                    Error.setMessage(self, message_shown="Limit exceeded!")
                 else:
                     Error.setMessage(self, message_shown="Positive value expected!")
                 return
@@ -1221,7 +1221,7 @@ class withdrawMoney:
             Error.setMessage(self, message_shown="Transaction failed!")
             return
         else:
-            output = "Amount of rupees " + str(amount) + " withdrawn successfully.\nUpdated balance : " + str(output)
+            output = "Amount of rands " + str(amount) + " withdrawn successfully.\nUpdated balance : " + str(output)
             customerMenu.printMessage_outside(output)
             self.master.withdraw()
 
@@ -1374,7 +1374,7 @@ class checkAccountSummary:
             adminMenu.printAccountSummary(identity)
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Id doesn't exist!")
+            Error.setMessage(self, message_shown="ID doesn't exist!")
             return
         self.master.withdraw()
 
