@@ -1,19 +1,4 @@
-vuyo
-0011
-*
-zungu
-0022
-*
-okuhle
-0033
-*
-saurav
-0044
-*
-khanya
-0055
-*
-okuhle
+1000
 0033
 40000.0
 23/03/2021
@@ -23,8 +8,9 @@ Savings
 1234567890
 Female
 South African
+pass
 *
-vuyo
+2000
 0011
 58690.0
 22/03/2021
@@ -34,8 +20,9 @@ Current
 1234432112
 Female
 South African
+pass
 *
-zungu
+3000
 0022
 1200.0
 12/03/2020
@@ -45,8 +32,9 @@ Current
 1234432112
 Male
 South African
+pass
 *
-saurav
+4000
 0044
 12374
 23/03/2021
@@ -56,8 +44,9 @@ Savings
 1234567890
 Male
 South African
+pass
 *
-khanya
+5000
 0055
 12374
 23/03/2021
@@ -67,6 +56,7 @@ Savings
 1234567890
 Male
 South African
+pass
 *
 1234567890
 0000
@@ -78,6 +68,7 @@ Savings
 0123456789
 Male
 South African
+pass
 *
 111122223333
 5555
@@ -89,4 +80,53 @@ Current
 0999884848
 Female
 South African
+pass
+*
+656
+1010
+40000
+17/05/2024
+tt
+Savings
+20/01/1999
+0987654321
+Male
+USA
+pass
+*
+00000000
+8888
+2500
+17/05/2024
+gg
+Savings
+11/12/2000
+0999999999
+Female
+USA
+pass
+*
+2024
+9999
+10000
+20/05/2024
+Mellz
+Current
+20/02/2024
+0123456789
+Male
+USA
+pass
+*
+2027
+1100
+5000
+20/05/2024
+you
+Current
+01/01/2020
+0999999999
+Female
+USA
+passport
 *

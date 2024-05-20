@@ -35,7 +35,7 @@ def check_date(date):
     day = int(date_elements[0])
     month = int(date_elements[1])
     year = int(date_elements[2])
-    if (year > 2024 or year < 0) or (month > 12 or month < 1):
+    if (year > 2021 or year < 0) or (month > 12 or month < 1):
         return False
     else:
         if check_leap(year):
@@ -68,12 +68,13 @@ def display_account_summary(identity, choice):  # choice 1 for full summary; cho
                 customer_database.__next__()  # skipping pin
                 output_message += "Current balance : " + customer_database.__next__().replace("\n", "") + "\n"
                 output_message += "Date of account creation : " + customer_database.__next__().replace("\n", "") + "\n"
-                output_message += "Account holder name : " + customer_database.__next__().replace("\n", "") + "\n"
-                output_message += "Account type: " + customer_database.__next__().replace("\n", "") + "\n"
+                output_message += "Name of account holder : " + customer_database.__next__().replace("\n", "") + "\n"
+                output_message += "Type of account : " + customer_database.__next__().replace("\n", "") + "\n"
                 output_message += "Date of Birth : " + customer_database.__next__().replace("\n", "") + "\n"
-                output_message += "Number : " + customer_database.__next__().replace("\n", "") + "\n"
+                output_message += "Mobile number : " + customer_database.__next__().replace("\n", "") + "\n"
                 output_message += "Gender : " + customer_database.__next__().replace("\n", "") + "\n"
                 output_message += "Nationality : " + customer_database.__next__().replace("\n", "") + "\n"
+                output_message += "KYC : " + customer_database.__next__().replace("\n", "") + "\n"
             else:
                 customer_database.readline()  # skipped pin
                 output_message += "Current balance : " + customer_database.readline().replace("\n", "") + "\n"
@@ -88,7 +89,7 @@ def display_account_summary(identity, choice):  # choice 1 for full summary; cho
                 else:
                     break
     if flag == 0:
-        print("\n# This account number does not exist! #")
+        print("\n# No account associated with the entered account number exists! #")
     return output_message
 
 
@@ -108,7 +109,7 @@ def delete_customer_account(identity, choice):  # choice 1 for admin, choice 2 f
     customer_database = open("./database/Customer/customerDatabase.txt", "w")
     customer_database.write(data_collector)
     if flag == 1:
-        output_message = "This account number." + str(identity) + " has been closed!"
+        output_message = "Account with account no." + str(identity) + " closed successfully!"
         if choice == 1:
             adminMenu.printMessage_outside(output_message)
         print(output_message)
@@ -124,7 +125,7 @@ def create_admin_account(identity, password):
     admin_id = identity
     admin_password = password
     append_data("./database/Admin/adminDatabase.txt", admin_id + "\n" + admin_password + "\n" + "*\n")
-    output_message = "The admin account has been successfully created !"
+    output_message = "Admin account created successfully !"
     adminMenu.printMessage_outside(output_message)
     print(output_message)
     admin_database.close()
@@ -146,7 +147,7 @@ def delete_admin_account(identity):
     admin_database = open("./database/Admin/adminDatabase.txt", "w")
     admin_database.write(data_collector)
     if flag == 1:
-        output_message = "Account with account id " + identity + " has been closed!"
+        output_message = "Account with account id " + identity + " closed successfully!"
         print(output_message)
         adminMenu.printMessage_outside(output_message)
     else:
@@ -173,7 +174,7 @@ def change_PIN(identity, new_PIN):
     customer_database = open("./database/Customer/customerDatabase.txt", "w")
     customer_database.write(data_collector)
 
-    output_message = "PIN has been suucessfully changed."
+    output_message = "PIN changed successfully."
     customerMenu.printMessage_outside(output_message)
     print(output_message)
 
@@ -208,37 +209,47 @@ def transaction(identity, amount, choice):  # choice 1 for deposit; choice 2 for
     return balance
 
 
-def check_credentials(identity, password, choice, admin_access):
-    folder_name = "./database/Admin" if choice == 1 else "./database/Customer"
-    file_name = "/adminDatabase.txt" if choice == 1 else "/customerDatabase.txt"
+def check_credentials(identity, password, choice,
+                      admin_access):  # checks credentials of admin/customer and returns True or False
+    folder_name = "./database/Admin" if (choice == 1) else "./database/Customer"
+    file_name = "/adminDatabase.txt" if (choice == 1) else "/customerDatabase.txt"
 
     try:
         os.makedirs(folder_name, exist_ok=True)
-        with open(folder_name + file_name, "r") as database:
-            is_credentials_correct = False
-            lines = iter(database.readlines())
-            for line in lines:
-                id_fetched = line.strip()
-                password_fetched = next(lines).strip()
-                if id_fetched == identity:
-                    if ((password == "DO_NOT_CHECK_ADMIN" and choice == 1 and not admin_access) or 
-                        (password == "DO_NOT_CHECK" and choice == 2 and admin_access) or 
-                        password_fetched == password):
-                        return True
-                # Skip unnecessary lines
-                if choice == 1:
-                    next(lines)  # Skip line
-                else:
-                    for _ in range(10):
-                        next(lines)  # Skip lines
+        database = open(folder_name + file_name, "r")
     except FileNotFoundError:
-        print(f"{folder_name[2:]} database doesn't exist!\nNew {folder_name[2:]} database created automatically.")
-        with open(folder_name + file_name, "a") as database:
-            if choice == 1:
-                database.write("admin\nadmin@123\n*\n")
+        print("#", folder_name[2:], "database doesn't exists!\n# New", folder_name[2:],
+              "database created automatically.")
+        database = open(folder_name + file_name, "a")
+        if choice == 1:
+            database.write("admin\nadmin@123\n*\n")
+    else:
+        is_credentials_correct = False
+        for line in database:
+            id_fetched = line.replace("\n", "")
+            password_fetched = database.__next__().replace("\n", "")
+            if id_fetched == identity:
+                if ((password == "DO_NOT_CHECK_ADMIN" and choice == 1 and admin_access == False) or (
+                        password == "DO_NOT_CHECK" and choice == 2 and admin_access == True) or password_fetched == password):
+                    is_credentials_correct = True
+                    database.close()
+                    return True
+            if choice == 1:  # skips unnecessary lines in admin database.
+                database.__next__()  # skipping line
+            else:  # skips unnecessary lines in customer database.
+                for index in range(10):
+                    fetched_line = database.readline()
+                    if fetched_line is not None:
+                        continue
+                    else:
+                        break
+        if is_credentials_correct:
+            print("Success!")
+        else:
+            print("Failure!")
 
+    database.close()
     return False
-
 
 
 # Backend python functions code ends.
@@ -803,36 +814,45 @@ class createCustomerAccount:
         self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  borderwidth="0", disabledforeground="#a3a3a3", foreground="#ffffff",
                                  highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Proceed''',
-                                 command=lambda: self.create_acc(self.Entry1.get(), self.Entry2.get(), acc_type.get(),                                                          self.Entry4.get(), self.Entry5.get(), gender.get(),
-                                                                 self.Entry7.get(), self.Entry10.get(),
-                                                                 self.Entry9.get(), 
+                                 command=lambda: self.create_acc(self.Entry1.get(), self.Entry2.get(), acc_type.get(),
+                                                                 self.Entry4.get(), self.Entry5.get(), gender.get(),
+                                                                 self.Entry7.get(), self.Entry8.get(),
+                                                                 self.Entry9.get(), self.Entry10.get(),
                                                                  self.Entry11.get()))
         self.Button2.place(relx=0.633, rely=0.893, height=24, width=67)
 
-   
+        self.Label8 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3", foreground="#000000",
+                               text='''KYC document name:''')
+        self.Label8.place(relx=0.18, rely=0.546, height=24, width=122)
+
+        self.Entry8 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+                               foreground="#000000", insertbackground="black")
+        self.Entry8.place(relx=0.511, rely=0.546, height=20, relwidth=0.302)
 
     def back(self):
         self.master.withdraw()
 
     def create_acc(self, customer_account_number, name, account_type, date_of_birth, mobile_number, gender, nationality,
+                   KYC_document,
                    PIN, confirm_PIN, initial_balance):
 
-        if customer_account_number.isnumeric():
+        if is_valid(customer_account_number) and customer_account_number.isnumeric():
             if name != "":
                 if account_type == "Savings" or account_type == "Current":
                     if check_date(date_of_birth):
                         if is_valid_mobile(mobile_number):
                             if gender == "Male" or gender == "Female":
                                 if nationality.__len__() != 0:
+                                    if KYC_document.__len__() != 0:
                                         if PIN.isnumeric() and PIN.__len__() == 4:
                                             if confirm_PIN == PIN:
                                                 if initial_balance.isnumeric():
-                                                    output_message = "Account is successfully created!"
+                                                    output_message = "Customer account created successfully!"
                                                     print(output_message)
                                                     adminMenu.printMessage_outside(output_message)
                                                 else:
                                                     Error(Toplevel(self.master))
-                                                    Error.setMessage(self, message_shown="Invalid amount!")
+                                                    Error.setMessage(self, message_shown="Invalid balance!")
                                                     return
                                             else:
                                                 Error(Toplevel(self.master))
@@ -842,9 +862,13 @@ class createCustomerAccount:
                                             Error(Toplevel(self.master))
                                             Error.setMessage(self, message_shown="Invalid PIN!")
                                             return
+                                    else:
+                                        Error(Toplevel(self.master))
+                                        Error.setMessage(self, message_shown="Enter KYC document!")
+                                        return
                                 else:
                                     Error(Toplevel(self.master))
-                                    Error.setMessage(self, message_shown="Enter nationality!")
+                                    Error.setMessage(self, message_shown="Enter Nationality!")
                                     return
                             else:
                                 Error(Toplevel(self.master))
@@ -852,7 +876,7 @@ class createCustomerAccount:
                                 return
                         else:
                             Error(Toplevel(self.master))
-                            Error.setMessage(self, message_shown="Invalid number!")
+                            Error.setMessage(self, message_shown="Invalid mobile number!")
                             return
                     else:
                         Error(Toplevel(self.master))
@@ -864,18 +888,18 @@ class createCustomerAccount:
                     return
             else:
                 Error(Toplevel(self.master))
-                Error.setMessage(self, message_shown="Name is empty!")
+                Error.setMessage(self, message_shown="Name can't be empty!")
                 return
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Invalid Account Number!")
+            Error.setMessage(self, message_shown="Acc-number is invalid!")
             return
 
         today = date.today()  # set date of account creation
         date_of_account_creation = today.strftime("%d/%m/%Y")
 
         # adding in database
-        data = customer_account_number + "\n" + PIN + "\n" + initial_balance + "\n" + date_of_account_creation + "\n" + name + "\n" + account_type + "\n" + date_of_birth + "\n" + mobile_number + "\n" + gender + "\n" + nationality + "\n" + "*\n"
+        data = customer_account_number + "\n" + PIN + "\n" + initial_balance + "\n" + date_of_account_creation + "\n" + name + "\n" + account_type + "\n" + date_of_birth + "\n" + mobile_number + "\n" + gender + "\n" + nationality + "\n" + KYC_document + "\n" + "*\n"
         append_data("./database/Customer/customerDatabase.txt", data)
 
         self.master.withdraw()
@@ -1062,6 +1086,7 @@ class customerMenu:
         Frame1_1_2 = tk.Frame(window, relief='groove', borderwidth="2", background="#fffffe")
         Frame1_1_2.place(relx=0.081, rely=0.547, relheight=0.415, relwidth=0.848)
 
+   
     def selectDeposit(self):
         depositMoney(Toplevel(self.master))
 
@@ -1374,7 +1399,7 @@ class checkAccountSummary:
             adminMenu.printAccountSummary(identity)
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="ID doesn't exist!")
+            Error.setMessage(self, message_shown="Id doesn't exist!")
             return
         self.master.withdraw()
 
