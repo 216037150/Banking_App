@@ -2,16 +2,17 @@ import os  # for creating directories Admin/Customer if it is not exists.
 from datetime import date  # for date of account creation when new customer account is created.
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 
 
 # Backend python functions code starts :
 def is_valid(customer_account_number):
     try:
-        customer_database = open("./database/Customer/customerDatabase.txt")
+        customer_database = open("./database/Customer/BankData.txt")
     except FileNotFoundError:
-        os.makedirs("./database/Customer/customerDatabase.txt", exist_ok=True)
+        os.makedirs("./database/Customer/BankData.txt", exist_ok=True)
         print("# Customer database doesn't exists!\n# New Customer database created automatically.")
-        customer_database = open("./database/Customer/customerDatabase.txt", "a")
+        customer_database = open("./database/Customer/BankData.txt", "a")
     else:  # if customer account  number is already allocated then this will return false. otherwise true.
         if check_credentials(customer_account_number, "DO_NOT_CHECK", 2, True):
             return False
@@ -59,7 +60,7 @@ def append_data(database_path, data):
 
 def display_account_summary(identity, choice):  # choice 1 for full summary; choice 2 for only account balance.
     flag = 0
-    customer_database = open("./database/Customer/customerDatabase.txt")
+    customer_database = open("./database/Customer/BankData.txt")
     output_message = ""
     for line in customer_database:
         if identity == line.replace("\n", ""):
@@ -94,7 +95,7 @@ def display_account_summary(identity, choice):  # choice 1 for full summary; cho
 
 
 def delete_customer_account(identity, choice):  # choice 1 for admin, choice 2 for customer
-    customer_database = open("./database/Customer/customerDatabase.txt")
+    customer_database = open("./database/Customer/BankData.txt")
     data_collector = ""
     flag = 0
     for line in customer_database:
@@ -106,7 +107,7 @@ def delete_customer_account(identity, choice):  # choice 1 for admin, choice 2 f
             data_collector += line
             for index in range(11):
                 data_collector += customer_database.readline()
-    customer_database = open("./database/Customer/customerDatabase.txt", "w")
+    customer_database = open("./database/Customer/BankData.txt", "w")
     customer_database.write(data_collector)
     if flag == 1:
         output_message = "Account with account no." + str(identity) + " closed successfully!"
@@ -157,7 +158,7 @@ def delete_admin_account(identity):
 
 
 def change_PIN(identity, new_PIN):
-    customer_database = open("./database/Customer/customerDatabase.txt")
+    customer_database = open("./database/Customer/BankData.txt")
     data_collector = ""
     for line in customer_database:
         if identity == line.replace("\n", ""):
@@ -171,7 +172,7 @@ def change_PIN(identity, new_PIN):
             for index in range(11):
                 data_collector += customer_database.readline()
     customer_database.close()
-    customer_database = open("./database/Customer/customerDatabase.txt", "w")
+    customer_database = open("./database/Customer/BankData.txt", "w")
     customer_database.write(data_collector)
 
     output_message = "PIN changed successfully."
@@ -180,7 +181,7 @@ def change_PIN(identity, new_PIN):
 
 
 def transaction(identity, amount, choice):  # choice 1 for deposit; choice 2 for withdraw
-    customer_database = open("./database/Customer/customerDatabase.txt")
+    customer_database = open("./database/Customer/BankData.txt")
     data_collector = ""
     balance = 0
     for line in customer_database:
@@ -204,7 +205,7 @@ def transaction(identity, amount, choice):  # choice 1 for deposit; choice 2 for
                 data_collector += customer_database.readline()
 
     customer_database.close()
-    customer_database = open("./database/Customer/customerDatabase.txt", "w")
+    customer_database = open("./database/Customer/BankData.txt", "w")
     customer_database.write(data_collector)
     return balance
 
@@ -212,7 +213,7 @@ def transaction(identity, amount, choice):  # choice 1 for deposit; choice 2 for
 def check_credentials(identity, password, choice,
                       admin_access):  # checks credentials of admin/customer and returns True or False
     folder_name = "./database/Admin" if (choice == 1) else "./database/Customer"
-    file_name = "/adminDatabase.txt" if (choice == 1) else "/customerDatabase.txt"
+    file_name = "/adminDatabase.txt" if (choice == 1) else "/BankData.txt"
 
     try:
         os.makedirs(folder_name, exist_ok=True)
@@ -500,7 +501,7 @@ class CustomerLogin:
         self.Button_back.place(relx=0.545, rely=0.755)
 
         global customer_img
-        customer_img = tk.PhotoImage(file="./images/customer.png")
+        customer_img = tk.PhotoImage(file="./images/cust.png")
 
     def back(self):
         self.master.withdraw()
@@ -585,7 +586,8 @@ class adminMenu:
         Frame1.place(relx=0.081, rely=0.547, relheight=0.415, relwidth=0.848)
 
     def closeAccount(self):
-        CloseAccountByAdmin(Toplevel(self.master))
+        if messagebox.askyesno("close", "Are you sure?"):
+            CloseAccountByAdmin(Toplevel(self.master))
 
     def createCustaccount(self):
         createCustomerAccount(Toplevel(self.master))
@@ -594,7 +596,8 @@ class adminMenu:
         createAdmin(Toplevel(self.master))
 
     def deleteAdmin(self):
-        deleteAdmin(Toplevel(self.master))
+        if messagebox.askyesno("Delete", "Are you sure?"):
+            deleteAdmin(Toplevel(self.master))
 
     def showAccountSummary(self):
         checkAccountSummary(Toplevel(self.master))
@@ -617,8 +620,9 @@ class adminMenu:
         output_message.pack(pady=20)
 
     def exit(self):
-        self.master.withdraw()
-        adminLogin(Toplevel(self.master))
+        if messagebox.askyesno("Exit", "Would you like to Exit?"):
+            self.master.withdraw()
+            adminLogin(Toplevel(self.master))
 
 
 class CloseAccountByAdmin:
@@ -1087,22 +1091,27 @@ class customerMenu:
         Frame1_1_2.place(relx=0.081, rely=0.547, relheight=0.415, relwidth=0.848)
 
    
+ 
     def selectDeposit(self):
-        depositMoney(Toplevel(self.master))
+        if messagebox.askyesno("Deposit", "Would you like to make a deposit?"):
+            depositMoney(Toplevel(self.master))
 
     def selectWithdraw(self):
-        withdrawMoney(Toplevel(self.master))
+        if messagebox.askyesno("Withdrawal", "Would you like to make a withdrawal?"):
+            withdrawMoney(Toplevel(self.master))
 
     def selectChangePIN(self):
-        changePIN(Toplevel(self.master))
+        if messagebox.askyesno("Change PIN", "Would you like to change your PIN?"):
+            changePIN(Toplevel(self.master))
 
     def selectCloseAccount(self):
         self.master.withdraw()
         closeAccount(Toplevel(self.master))
 
     def exit(self):
-        self.master.withdraw()
-        CustomerLogin(Toplevel(self.master))
+        if messagebox.askyesno("Exit", "Would you like to Exit?"):
+            self.master.withdraw()
+            CustomerLogin(Toplevel(self.master))
 
     def checkBalance(self):
         output = display_account_summary(customer_accNO, 2)
@@ -1129,7 +1138,7 @@ class customerMenu:
 class depositMoney:
     def __init__(self, window=None):
         self.master = window
-        window.geometry("411x117+519+278")
+        window.geometry("600x150+450+200")
         window.minsize(120, 1)
         window.maxsize(1370, 749)
         window.resizable(0, 0)
@@ -1139,29 +1148,28 @@ class depositMoney:
         window.configure(borderwidth="2")
         window.configure(background="#f2f3f4")
 
-        self.Label1 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
+        self.Label1 = Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
                                font="-family {Segoe UI} -size 9", foreground="#000000", borderwidth="0",
-                               text='''Enter amount to deposit :''')
-        self.Label1.place(relx=0.146, rely=0.171, height=21, width=164)
+                               text='''How much would you like to deposit?''')
+        self.Label1.place(relx=0.1, rely=0.2, height=21, width=250)
 
-        self.Entry1 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+        self.Entry1 = Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
                                foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
-        self.Entry1.place(relx=0.535, rely=0.171, height=20, relwidth=0.253)
+        self.Entry1.place(relx=0.5, rely=0.2, height=20, relwidth=0.3)
 
-        self.Button1 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+        self.Button1 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  disabledforeground="#a3a3a3", borderwidth="0", foreground="#ffffff",
                                  highlightbackground="#000000",
                                  highlightcolor="black", pady="0", text='''Proceed''',
                                  command=lambda: self.submit(self.Entry1.get()))
-        self.Button1.place(relx=0.56, rely=0.598, height=24, width=67)
+        self.Button1.place(relx=0.6, rely=0.6, height=24, width=100)
 
-        self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+        self.Button2 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 9", foreground="#ffffff",
                                  highlightbackground="#d9d9d9", borderwidth="0", highlightcolor="black", pady="0",
                                  text='''Back''',
                                  command=self.back)
-        self.Button2.place(relx=0.268, rely=0.598, height=24, width=67)
-
+        self.Button2.place(relx=0.3, rely=0.6, height=24, width=100)
     def submit(self, amount):
         if amount.isnumeric():
             if 25000 >= float(amount) > 0:
@@ -1175,14 +1183,14 @@ class depositMoney:
                 return
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="The ammount is invalid!")
+            Error.setMessage(self, message_shown="Invalid input!")
             return
         if output == -1:
             Error(Toplevel(self.master))
             Error.setMessage(self, message_shown="Transaction failed!")
             return
         else:
-            output = "Amount of rands " + str(amount) + " deposited successfully.\nUpdated balance : " + str(output)
+            output = "R" + str(amount) + "  has been successfully deposited.\n\nUpdated balance : " + str(output)
             customerMenu.printMessage_outside(output)
             self.master.withdraw()
 
@@ -1193,7 +1201,7 @@ class depositMoney:
 class withdrawMoney:
     def __init__(self, window=None):
         self.master = window
-        window.geometry("411x117+519+278")
+        window.geometry("600x150+450+200")
         window.minsize(120, 1)
         window.maxsize(1370, 749)
         window.resizable(0, 0)
@@ -1203,28 +1211,29 @@ class withdrawMoney:
         window.configure(borderwidth="2")
         window.configure(background="#f2f3f4")
 
-        self.Label1 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
+        self.Label1 = Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
                                font="-family {Segoe UI} -size 9", foreground="#000000",
-                               text='''Enter amount to withdraw :''')
-        self.Label1.place(relx=0.146, rely=0.171, height=21, width=164)
+                               text='''How much would you like to withdraw?''')
+        self.Label1.place(relx=0.1, rely=0.2, height=21, width=250)
 
-        self.Entry1 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+        self.Entry1 = Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
                                foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
-        self.Entry1.place(relx=0.535, rely=0.171, height=20, relwidth=0.253)
+        self.Entry1.place(relx=0.5, rely=0.2, height=20, relwidth=0.3)
 
-        self.Button1 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+        self.Button1 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  disabledforeground="#a3a3a3", borderwidth="0", foreground="#ffffff",
                                  highlightbackground="#000000",
                                  highlightcolor="black", pady="0", text='''Proceed''',
                                  command=lambda: self.submit(self.Entry1.get()))
-        self.Button1.place(relx=0.56, rely=0.598, height=24, width=67)
+        self.Button1.place(relx=0.6, rely=0.6, height=24, width=100)
 
-        self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+        self.Button2 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  disabledforeground="#a3a3a3", borderwidth="0", font="-family {Segoe UI} -size 9",
                                  foreground="#ffffff",
                                  highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Back''',
                                  command=self.back)
-        self.Button2.place(relx=0.268, rely=0.598, height=24, width=67)
+        self.Button2.place(relx=0.3, rely=0.6, height=24, width=100)
+
 
     def submit(self, amount):
         if amount.isnumeric():
@@ -1239,14 +1248,14 @@ class withdrawMoney:
                 return
         else:
             Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Invalid amount!")
+            Error.setMessage(self, message_shown="Invalid input!")
             return
         if output == -1:
             Error(Toplevel(self.master))
             Error.setMessage(self, message_shown="Transaction failed!")
             return
         else:
-            output = "Amount of rands " + str(amount) + " withdrawn successfully.\nUpdated balance : " + str(output)
+            output = "R" + str(amount) + " has been successfully withdrawn.\n\nUpdated balance : " + str(output)
             customerMenu.printMessage_outside(output)
             self.master.withdraw()
 
