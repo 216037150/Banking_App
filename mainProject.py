@@ -904,7 +904,7 @@ class createCustomerAccount:
 
         # adding in database
         data = customer_account_number + "\n" + PIN + "\n" + initial_balance + "\n" + date_of_account_creation + "\n" + name + "\n" + account_type + "\n" + date_of_birth + "\n" + mobile_number + "\n" + gender + "\n" + nationality + "\n" + KYC_document + "\n" + "*\n"
-        append_data("./database/Customer/customerDatabase.txt", data)
+        append_data("./database/Customer/BankData.txt", data)
 
         self.master.withdraw()
 
