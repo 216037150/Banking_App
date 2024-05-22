@@ -3,6 +3,9 @@ from datetime import date  # for date of account creation when new customer acco
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+import random
+import string
+import os
 
 
 # Backend python functions code starts :
@@ -1032,10 +1035,11 @@ class deleteAdmin:
         self.master.withdraw()
 
 
+
 class customerMenu:
     def __init__(self, window=None):
         self.master = window
-        window.geometry("743x494+329+153")
+        window.geometry("743x494+329+154")
         window.minsize(120, 1)
         window.maxsize(1370, 749)
         window.resizable(0, 0)
@@ -1086,238 +1090,164 @@ class customerMenu:
                                  text='''Check your balance''', command=self.checkBalance)
         self.Button6.place(relx=0.04, rely=0.683, height=34, width=181, bordermode='ignore')
 
+        self.Button7 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+                                  disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 9", foreground="#ffffff",
+                                  highlightbackground="#d9d9d9", highlightcolor="black", pady="0",
+                                  text='''Bank Statement''',
+                                  command=self.show_bank_statement)
+        self.Button7.place(relx=0.04, rely=0.439, height=34, width=181, bordermode='ignore')
+
         global Frame1_1_2
         Frame1_1_2 = tk.Frame(window, relief='groove', borderwidth="2", background="#fffffe")
         Frame1_1_2.place(relx=0.081, rely=0.547, relheight=0.415, relwidth=0.848)
 
-   
- 
+        self.balance = self.read_balance()
+
     def selectDeposit(self):
         if messagebox.askyesno("Deposit", "Would you like to make a deposit?"):
-            depositMoney(Toplevel(self.master))
+            self.depositPrompt(Toplevel(self.master))
 
     def selectWithdraw(self):
         if messagebox.askyesno("Withdrawal", "Would you like to make a withdrawal?"):
-            withdrawMoney(Toplevel(self.master))
+            self.withdrawPrompt(Toplevel(self.master))
 
     def selectChangePIN(self):
         if messagebox.askyesno("Change PIN", "Would you like to change your PIN?"):
-            changePIN(Toplevel(self.master))
+            self.changePIN(Toplevel(self.master))
 
     def selectCloseAccount(self):
         self.master.withdraw()
-        closeAccount(Toplevel(self.master))
+        self.closeAccount(Toplevel(self.master))
 
     def exit(self):
         if messagebox.askyesno("Exit", "Would you like to Exit?"):
             self.master.withdraw()
-            CustomerLogin(Toplevel(self.master))
+            self.CustomerLogin(Toplevel(self.master))
 
     def checkBalance(self):
-        output = display_account_summary(customer_accNO, 2)
+        output = f"Current balance: R{self.balance}"
         self.printMessage(output)
-        print("check balance function called.")
 
     def printMessage(self, output):
-        # clearing the frame
         for widget in Frame1_1_2.winfo_children():
             widget.destroy()
-        # getting output_message and displaying it in the frame
         output_message = Label(Frame1_1_2, text=output, background="#fffffe")
         output_message.pack(pady=20)
 
-    def printMessage_outside(output):
-        # clearing the frame
-        for widget in Frame1_1_2.winfo_children():
-            widget.destroy()
-        # getting output_message and displaying it in the frame
-        output_message = Label(Frame1_1_2, text=output, background="#fffffe")
-        output_message.pack(pady=20)
+    def show_bank_statement(self):
+        log_content = self.read_transaction_log()
+        messagebox.showinfo("Bank Statement", f"Transaction Log:\n\n{log_content}")
 
+    def deposit(self, amount):
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError("Deposit amount must be positive")
+            self.balance += amount
+            self.update_transaction_log("Deposit", amount)
+            messagebox.showinfo("Success", f"Deposit of R{amount} successful.")
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a valid amount.")
+        self.update_bank_data(self.balance)
 
-class depositMoney:
-    def __init__(self, window=None):
-        self.master = window
-        window.geometry("600x150+450+200")
-        window.minsize(120, 1)
-        window.maxsize(1370, 749)
-        window.resizable(0, 0)
-        window.title("Deposit money")
-        p1 = PhotoImage(file='./images/deposit_icon.png')
-        window.iconphoto(True, p1)
-        window.configure(borderwidth="2")
-        window.configure(background="#f2f3f4")
+    def withdraw(self, amount):
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError("Withdrawal amount must be positive")
+            if amount > self.balance:
+                raise ValueError("Insufficient funds")
+            self.balance -= amount
+            self.update_transaction_log("Withdrawal", amount)
+            messagebox.showinfo("Success", f"Withdrawal of R{amount} successful.")
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a valid amount.")
+        self.update_bank_data(self.balance)
 
-        self.Label1 = Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
-                               font="-family {Segoe UI} -size 9", foreground="#000000", borderwidth="0",
-                               text='''How much would you like to deposit?''')
-        self.Label1.place(relx=0.1, rely=0.2, height=21, width=250)
+    def update_transaction_log(self, transaction_type, amount):
+        with open("TransactionLog.txt", "a") as log_file:
+            log_file.write(f"{transaction_type}: R{amount}\n")
 
-        self.Entry1 = Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
-        self.Entry1.place(relx=0.5, rely=0.2, height=20, relwidth=0.3)
+    def update_bank_data(self, balance):
+        with open("BankData.txt", "w") as bank_data_file:
+            bank_data_file.write(str(balance))
 
-        self.Button1 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", borderwidth="0", foreground="#ffffff",
-                                 highlightbackground="#000000",
-                                 highlightcolor="black", pady="0", text='''Proceed''',
-                                 command=lambda: self.submit(self.Entry1.get()))
-        self.Button1.place(relx=0.6, rely=0.6, height=24, width=100)
+    def read_balance(self):
+        try:
+            with open("BankData.txt", "r") as bank_data_file:
+                balance = float(bank_data_file.read())
+        except FileNotFoundError:
+            balance = 0.0
+        return balance
 
-        self.Button2 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 9", foreground="#ffffff",
-                                 highlightbackground="#d9d9d9", borderwidth="0", highlightcolor="black", pady="0",
-                                 text='''Back''',
-                                 command=self.back)
-        self.Button2.place(relx=0.3, rely=0.6, height=24, width=100)
-    def submit(self, amount):
-        if amount.isnumeric():
-            if 25000 >= float(amount) > 0:
-                output = transaction(customer_accNO, float(amount), 1)
-            else:
-                Error(Toplevel(self.master))
-                if float(amount) > 25000:
-                    Error.setMessage(self, message_shown="Limit Exceeded!")
-                else:
-                    Error.setMessage(self, message_shown="Positive value expected!")
-                return
-        else:
-            Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Invalid input!")
-            return
-        if output == -1:
-            Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Transaction failed!")
-            return
-        else:
-            output = "R" + str(amount) + "  has been successfully deposited.\n\nUpdated balance : " + str(output)
-            customerMenu.printMessage_outside(output)
-            self.master.withdraw()
+    def read_transaction_log(self):
+        try:
+            with open("TransactionLog.txt", "r") as log_file:
+                log_content = log_file.read()
+        except FileNotFoundError:
+            log_content = "Transaction log not found."
+        return log_content
 
-    def back(self):
-        self.master.withdraw()
+    def depositPrompt(self, window):
+        self.transaction_window(window, "Deposit")
 
+    def withdrawPrompt(self, window):
+        self.transaction_window(window, "Withdraw")
 
-class withdrawMoney:
-    def __init__(self, window=None):
-        self.master = window
-        window.geometry("600x150+450+200")
-        window.minsize(120, 1)
-        window.maxsize(1370, 749)
-        window.resizable(0, 0)
-        window.title("Withdraw money")
-        p1 = PhotoImage(file='./images/withdraw_icon.png')
-        window.iconphoto(True, p1)
-        window.configure(borderwidth="2")
-        window.configure(background="#f2f3f4")
+    def transaction_window(self, window, transaction_type):
+        window.geometry("300x200")
+        window.title(f"{transaction_type} Money")
 
-        self.Label1 = Label(window, background="#f2f3f4", disabledforeground="#a3a3a3",
-                               font="-family {Segoe UI} -size 9", foreground="#000000",
-                               text='''How much would you like to withdraw?''')
-        self.Label1.place(relx=0.1, rely=0.2, height=21, width=250)
+        label = tk.Label(window, text=f"Enter amount to {transaction_type.lower()}:")
+        label.pack(pady=10)
 
-        self.Entry1 = Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
-        self.Entry1.place(relx=0.5, rely=0.2, height=20, relwidth=0.3)
+        amount_entry = tk.Entry(window)
+        amount_entry.pack(pady=10)
 
-        self.Button1 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", borderwidth="0", foreground="#ffffff",
-                                 highlightbackground="#000000",
-                                 highlightcolor="black", pady="0", text='''Proceed''',
-                                 command=lambda: self.submit(self.Entry1.get()))
-        self.Button1.place(relx=0.6, rely=0.6, height=24, width=100)
+        confirm_button = tk.Button(window, text="Confirm", command=lambda: self.handle_transaction(transaction_type, amount_entry.get(), window))
+        confirm_button.pack(pady=10)
 
-        self.Button2 = Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", borderwidth="0", font="-family {Segoe UI} -size 9",
-                                 foreground="#ffffff",
-                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Back''',
-                                 command=self.back)
-        self.Button2.place(relx=0.3, rely=0.6, height=24, width=100)
+    def handle_transaction(self, transaction_type, amount, window):
+        if transaction_type == "Deposit":
+            self.deposit(amount)
+        elif transaction_type == "Withdraw":
+            self.withdraw(amount)
+        window.destroy()
 
-
-    def submit(self, amount):
-        if amount.isnumeric():
-            if 25000 >= float(amount) > 0:
-                output = transaction(customer_accNO, float(amount), 2)
-            else:
-                Error(Toplevel(self.master))
-                if float(amount) > 25000:
-                    Error.setMessage(self, message_shown="Limit exceeded!")
-                else:
-                    Error.setMessage(self, message_shown="Positive value expected!")
-                return
-        else:
-            Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Invalid input!")
-            return
-        if output == -1:
-            Error(Toplevel(self.master))
-            Error.setMessage(self, message_shown="Transaction failed!")
-            return
-        else:
-            output = "R" + str(amount) + " has been successfully withdrawn.\n\nUpdated balance : " + str(output)
-            customerMenu.printMessage_outside(output)
-            self.master.withdraw()
-
-    def back(self):
-        self.master.withdraw()
-
-
-class changePIN:
-    def __init__(self, window=None):
-        self.master = window
-        window.geometry("411x111+505+223")
-        window.minsize(120, 1)
-        window.maxsize(1370, 749)
-        window.resizable(0, 0)
+    def changePIN(self, window):
+        window.geometry("300x200")
         window.title("Change PIN")
-        window.configure(background="#f2f3f4")
 
-        self.Label1 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3", foreground="#000000",
-                               text='''Enter new PIN:''')
-        self.Label1.place(relx=0.243, rely=0.144, height=21, width=93)
+        label = tk.Label(window, text="Enter new PIN:")
+        label.pack(pady=10)
 
-        self.Label2 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3", foreground="#000000",
-                               text='''Confirm PIN:''')
-        self.Label2.place(relx=0.268, rely=0.414, height=21, width=82)
+        pin_entry = tk.Entry(window, show="*")
+        pin_entry.pack(pady=10)
 
-        self.Entry1 = tk.Entry(window, show="*", background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black")
-        self.Entry1.place(relx=0.528, rely=0.144, height=20, relwidth=0.229)
+        confirm_button = tk.Button(window, text="Confirm", command=lambda: self.update_pin(pin_entry.get(), window))
+        confirm_button.pack(pady=10)
 
-        self.Entry2 = tk.Entry(window, show="*", background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black")
-        self.Entry2.place(relx=0.528, rely=0.414, height=20, relwidth=0.229)
+    def update_pin(self, new_pin, window):
+        try:
+            if len(new_pin) != 4 or not new_pin.isdigit():
+                raise ValueError("PIN must be a 4-digit number")
+            with open("pin.txt", "w") as pin_file:
+                pin_file.write(new_pin)
+            messagebox.showinfo("Success", "PIN updated successfully.")
+        except ValueError:
+            messagebox.showerror("Error", "Invalid PIN. Please enter a 4-digit number.")
+        window.destroy()
 
-        self.Button1 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", foreground="#ffffff", borderwidth="0",
-                                 highlightbackground="#d9d9d9",
-                                 highlightcolor="black", pady="0", text='''Proceed''',
-                                 command=lambda: self.submit(self.Entry1.get(), self.Entry2.get()))
-        self.Button1.place(relx=0.614, rely=0.721, height=24, width=67)
+    def closeAccount(self, window):
+        if messagebox.askyesno("Close Account", "Are you sure you want to close your account? This action cannot be undone."):
+            os.remove("BankData.txt")
+            os.remove("TransactionLog.txt")
+            messagebox.showinfo("Account Closed", "Your account has been closed.")
+            window.destroy()
 
-        self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
-                                 disabledforeground="#a3a3a3", foreground="#ffffff", borderwidth="0",
-                                 highlightbackground="#d9d9d9",
-                                 highlightcolor="black", pady="0", text="Back", command=self.back)
-        self.Button2.place(relx=0.214, rely=0.721, height=24, width=67)
-
-    def submit(self, new_PIN, confirm_new_PIN):
-        if new_PIN == confirm_new_PIN and str(new_PIN).__len__() == 4 and new_PIN.isnumeric():
-            change_PIN(customer_accNO, new_PIN)
-            self.master.withdraw()
-        else:
-            Error(Toplevel(self.master))
-            if new_PIN != confirm_new_PIN:
-                Error.setMessage(self, message_shown="The PIN does not match!")
-            elif str(new_PIN).__len__() != 6:
-                Error.setMessage(self, message_shown="The length of the PIN should contain 6 characters")
-            else:
-                Error.setMessage(self, message_shown="The Pin is invalid!")
-            return
-
-    def back(self):
-        self.master.withdraw()
+    def CustomerLogin(self, window):
+        # Define CustomerLogin window here
+        pass
 
 
 class closeAccount:

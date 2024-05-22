@@ -1,0 +1,35 @@
+Deposit: $3000.0
+Withdrawal: $1500.0
+Deposit: $501500.0
+Withdrawal: $500000.0
+Deposit: $600000.0
+Withdrawal: $590000.0
+Deposit: $590020.0
+Deposit: $590070.0
+Deposit: R40.0+
+
+
+Deposit: R40.0
+Deposit: R40.0
+Withdrawal: R5000.0
+Withdrawal: R5000.0
+Withdrawal: R500000.0
+Withdrawal: R50000.0
+Withdrawal: R30000.0
+Deposit: R9000.0
+Withdrawal: R9000.0
+Deposit: R9000.0
+Withdrawal: R9000.0
+Deposit: R50.0
+Withdrawal: R700.0
+Deposit: R30.0
+Withdrawal: R50.0
+Deposit: R100.0
+Deposit: R30.0
+Deposit: R100.0
+Withdrawal: R20.0
+Deposit: R20.0
+Withdrawal: R10.0
+Deposit: R10.0
+Deposit: R10.0
+Withdrawal: R10.0
