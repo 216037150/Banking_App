@@ -1,0 +1,2 @@
+Deposit: R50.0
+Deposit: R500.0
