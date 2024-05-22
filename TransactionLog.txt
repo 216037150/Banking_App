@@ -33,3 +33,6 @@ Withdrawal: R10.0
 Deposit: R10.0
 Deposit: R10.0
 Withdrawal: R10.0
+Deposit: R700.0
+Deposit: R500.0
+Withdrawal: R500.0

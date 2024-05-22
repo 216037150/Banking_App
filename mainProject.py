@@ -283,7 +283,7 @@ class welcomeScreen:
                                  activeforeground="#000000", background="#00254a", disabledforeground="#a3a3a3",
                                  foreground="#fbfbfb", borderwidth="0", highlightbackground="#d9d9d9",
                                  highlightcolor="black", pady="0",
-                                 text='''EMPLOYEE''')
+                                 text='''ADMIN''')
         self.Button1.configure(font="-family {Segoe UI} -size 10 -weight bold")
         self.Button1.place(relx=0.161, rely=0.583, height=24, width=87)
 
@@ -1048,7 +1048,7 @@ class customerMenu:
 
         self.Labelframe1 = tk.LabelFrame(window, relief='groove', font="-family {Segoe UI} -size 13 -weight bold",
                                          foreground="#000000", text='''Select your option''', background="#fffffe")
-        self.Labelframe1.place(relx=0.081, rely=0.081, relheight=0.415, relwidth=0.848)
+        self.Labelframe1.place(relx=0.081, rely=0.081, relheight=0.475, relwidth=0.848)
 
         self.Button1 = tk.Button(self.Labelframe1, command=self.selectWithdraw, activebackground="#ececec",
                                  activeforeground="#000000", background="#00254a", borderwidth="0",
@@ -1090,16 +1090,16 @@ class customerMenu:
                                  text='''Check your balance''', command=self.checkBalance)
         self.Button6.place(relx=0.04, rely=0.683, height=34, width=181, bordermode='ignore')
 
-        self.Button7 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+        self.Button7 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#00254a",
                                   disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 9", foreground="#ffffff",
                                   highlightbackground="#d9d9d9", highlightcolor="black", pady="0",
                                   text='''Bank Statement''',
                                   command=self.show_bank_statement)
-        self.Button7.place(relx=0.04, rely=0.439, height=34, width=181, bordermode='ignore')
+        self.Button7.place(relx=0.38, rely=0.439, height=34, width=181, bordermode='ignore')
 
         global Frame1_1_2
         Frame1_1_2 = tk.Frame(window, relief='groove', borderwidth="2", background="#fffffe")
-        Frame1_1_2.place(relx=0.081, rely=0.547, relheight=0.415, relwidth=0.848)
+        Frame1_1_2.place(relx=0.081, rely=0.590, relheight=0.415, relwidth=0.848)
 
         self.balance = self.read_balance()
 
