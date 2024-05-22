@@ -3,9 +3,10 @@ from datetime import date  # for date of account creation when new customer acco
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+from datetime import datetime
+from tkinter import Label, Entry, Button, PhotoImage, Toplevel
 import random
 import string
-import os
 
 
 # Backend python functions code starts :
@@ -124,15 +125,16 @@ def delete_customer_account(identity, choice):  # choice 1 for admin, choice 2 f
         print(output_message)
 
 
+
 def create_admin_account(identity, password):
-    admin_database = open("./database/Admin/adminDatabase.txt", "a")
-    admin_id = identity
-    admin_password = password
-    append_data("./database/Admin/adminDatabase.txt", admin_id + "\n" + admin_password + "\n" + "*\n")
-    output_message = "Admin account created successfully !"
-    adminMenu.printMessage_outside(output_message)
-    print(output_message)
-    admin_database.close()
+    with open("./database/Admin/adminDatabase.txt", "a") as admin_database:
+        admin_id = identity
+        admin_password = password
+        admin_database.write(admin_id + "\n" + admin_password + "\n" + "*\n")
+        output_message = "Admin account created successfully !"
+        adminMenu.printMessage_outside(output_message)
+        print(output_message)
+        admin_database.close()
 
 
 def delete_admin_account(identity):
@@ -915,9 +917,9 @@ class createCustomerAccount:
 class createAdmin:
     def __init__(self, window=None):
         self.master = window
-        window.geometry("411x150+512+237")
+        window.geometry("500x170+532+267")
         window.minsize(120, 1)
-        window.maxsize(1370, 749)
+        window.maxsize(1470, 769)
         window.resizable(0, 0)
         window.title("Create admin account")
         window.configure(background="#f2f3f4")
@@ -927,31 +929,21 @@ class createAdmin:
         self.Label1.place(relx=0.219, rely=0.067, height=27, width=104)
 
         self.Label2 = tk.Label(window, background="#f2f3f4", disabledforeground="#a3a3a3", foreground="#000000",
-                               text='''Enter password:''')
+                               text='''  Password:''')
         self.Label2.place(relx=0.219, rely=0.267, height=27, width=104)
 
         self.Entry1 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
                                foreground="#000000", insertbackground="black")
         self.Entry1.place(relx=0.487, rely=0.087, height=20, relwidth=0.326)
 
-        self.Entry2 = tk.Entry(window, show="*", background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+        self.Entry2 = tk.Entry(window, background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
                                foreground="#000000", insertbackground="black")
         self.Entry2.place(relx=0.487, rely=0.287, height=20, relwidth=0.326)
-
-        self.Label3 = tk.Label(window, activebackground="#f9f9f9", activeforeground="black", background="#f2f3f4",
-                               disabledforeground="#a3a3a3", foreground="#000000", highlightbackground="#d9d9d9",
-                               highlightcolor="black", text='''Confirm password:''')
-        self.Label3.place(relx=0.195, rely=0.467, height=27, width=104)
-
-        self.Entry3 = tk.Entry(window, show="*", background="#cae4ff", disabledforeground="#a3a3a3", font="TkFixedFont",
-                               foreground="#000000", insertbackground="black")
-        self.Entry3.place(relx=0.487, rely=0.487, height=20, relwidth=0.326)
 
         self.Button1 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
                                  borderwidth="0", disabledforeground="#a3a3a3", foreground="#ffffff",
                                  highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text="Proceed",
-                                 command=lambda: self.create_admin_account(self.Entry1.get(), self.Entry2.get(),
-                                                                           self.Entry3.get()))
+                                 command=lambda: self.create_admin_account(self.Entry1.get(), self.Entry2.get()))
         self.Button1.place(relx=0.598, rely=0.733, height=24, width=67)
 
         self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
@@ -960,23 +952,31 @@ class createAdmin:
                                  command=self.back)
         self.Button2.place(relx=0.230, rely=0.733, height=24, width=67)
 
+        self.Button3 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080",
+                                 borderwidth="0", disabledforeground="#a3a3a3", foreground="#ffffff",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text="Generate Password",
+                                 command=self.generate_password)
+        self.Button3.place(relx=0.400, rely=0.533, height=24, width=120)
+
     def back(self):
         self.master.withdraw()
 
-    def create_admin_account(self, identity, password, confirm_password):
+    def create_admin_account(self, identity, password):
         if check_credentials(identity, "DO_NOT_CHECK_ADMIN", 1, False):
             Error(Toplevel(self.master))
             Error.setMessage(self, message_shown="ID is unavailable!")
         else:
-            if password == confirm_password and len(password) != 0:
+            if len(password) != 0:
                 create_admin_account(identity, password)
                 self.master.withdraw()
             else:
                 Error(Toplevel(self.master))
-                if password != confirm_password:
-                    Error.setMessage(self, message_shown="The passwords do not match!")
-                else:
-                    Error.setMessage(self, message_shown="The password is invalid!")
+                Error.setMessage(self, message_shown="The password is invalid!")
+
+    def generate_password(self):
+        generated_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        self.Entry2.delete(0, tk.END)
+        self.Entry2.insert(0, generated_password)
 
 
 class deleteAdmin:
@@ -1116,8 +1116,9 @@ class customerMenu:
             self.changePIN(Toplevel(self.master))
 
     def selectCloseAccount(self):
-        self.master.withdraw()
-        self.closeAccount(Toplevel(self.master))
+        if messagebox.askyesno("Close Account", "Are you sure?"):
+            self.master.withdraw()
+            closeAccount(Toplevel(self.master))
 
     def exit(self):
         if messagebox.askyesno("Exit", "Would you like to Exit?"):
