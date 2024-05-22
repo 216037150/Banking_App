@@ -1123,7 +1123,7 @@ class customerMenu:
     def exit(self):
         if messagebox.askyesno("Exit", "Would you like to Exit?"):
             self.master.withdraw()
-            self.CustomerLogin(Toplevel(self.master))
+            CustomerLogin(Toplevel(self.master))
 
     def checkBalance(self):
         output = f"Current balance: R{self.balance}"
