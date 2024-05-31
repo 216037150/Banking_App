@@ -26,3 +26,16 @@ Deposit: R30.0
 Withdrawal: R50.0
 Deposit: R100.0
 Deposit: R30.0
+<<<<<<< HEAD
+=======
+Deposit: R100.0
+Withdrawal: R20.0
+Deposit: R20.0
+Withdrawal: R10.0
+Deposit: R10.0
+Deposit: R10.0
+Withdrawal: R10.0
+Deposit: R700.0
+Deposit: R500.0
+Withdrawal: R500.0
+>>>>>>> origin/work
